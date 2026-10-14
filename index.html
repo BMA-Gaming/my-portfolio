@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Baxti — Portfolio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #07080c;
+    --surface: rgba(255,255,255,0.03);
+    --surface-solid: #11141c;
+    --surface-2: #181c27;
+    --text: #eef1f7;
+    --muted: #8a92a6;
+    --accent: #6d8dff;
+    --accent-2: #b07cff;
+    --border: rgba(255,255,255,0.08);
+    --radius: 20px;
+    --ease: cubic-bezier(.2,.8,.2,1);
+  }
+  [data-theme="light"] {
+    --bg: #f5f6fa;
+    --surface: rgba(255,255,255,0.7);
+    --surface-solid: #ffffff;
+    --surface-2: #eceff6;
+    --text: #0f1422;
+    --muted: #5a6276;
+    --border: rgba(15,20,34,0.08);
+  }
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'Inter', system-ui, sans-serif;
+    background: var(--bg); color: var(--text);
+    line-height: 1.6; overflow-x: hidden;
+    transition: background .4s, color .4s;
+  }
+  a { color: inherit; text-decoration: none; }
+  img { max-width: 100%; display: block; }
+  .container { max-width: 1140px; margin: 0 auto; padding: 0 24px; }
+  section { padding: 120px 0; position: relative; }
+  .eyebrow {
+    font-size: .8rem; letter-spacing: .15em; text-transform: uppercase;
+    color: var(--accent); font-weight: 700; margin-bottom: 12px; display: block;
+  }
+  .section-title { font-size: clamp(2rem, 4vw, 2.8rem); font-weight: 800; letter-spacing: -0.03em; margin-bottom: 14px; }
+  .section-sub { color: var(--muted); margin-bottom: 56px; max-width: 620px; }
+  .grad {
+    background: linear-gradient(120deg, var(--accent), var(--accent-2));
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+
+  /* Background glow + cursor */
+  .glow-cursor {
+    position: fixed; width: 420px; height: 420px; border-radius: 50%;
+    pointer-events: none; z-index: 0; transform: translate(-50%, -50%);
+    background: radial-gradient(circle, color-mix(in srgb, var(--accent) 22%, transparent), transparent 70%);
+    transition: opacity .3s; opacity: 0;
+  }
+  @media (hover: hover) { .glow-cursor { opacity: 1; } }
+  .grain {
+    position: fixed; inset: 0; pointer-events: none; z-index: 1; opacity: .04;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='.8'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+  .progress {
+    position: fixed; top: 0; left: 0; height: 2px; width: 0; z-index: 200;
+    background: linear-gradient(90deg, var(--accent), var(--accent-2));
+  }
+
+  /* NAV */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+    background: color-mix(in srgb, var(--bg) 70%, transparent);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-inner { display: flex; align-items: center; justify-content: space-between; height: 68px; }
+  .logo { font-weight: 800; font-size: 1.25rem; letter-spacing: -0.02em; }
+  .nav-links { display: flex; gap: 30px; list-style: none; }
+  .nav-links a {
+    font-size: .92rem; color: var(--muted); position: relative; transition: color .2s;
+  }
+  .nav-links a::after {
+    content: ""; position: absolute; left: 0; bottom: -6px; width: 0; height: 2px;
+    background: var(--accent); transition: width .3s var(--ease);
+  }
+  .nav-links a:hover, .nav-links a.active { color: var(--text); }
+  .nav-links a.active::after, .nav-links a:hover::after { width: 100%; }
+  .nav-controls { display: flex; gap: 10px; align-items: center; }
+  select, .icon-btn {
+    background: var(--surface-solid); color: var(--text); border: 1px solid var(--border);
+    border-radius: 10px; padding: 8px 12px; font: inherit; font-size: .88rem; cursor: pointer;
+    transition: border-color .2s, transform .2s;
+  }
+  .icon-btn:hover, select:hover { border-color: var(--accent); }
+  .icon-btn:active { transform: scale(.94); }
+  .menu-toggle { display: none; }
+
+  /* HERO */
+  .hero { min-height: 100vh; display: flex; align-items: center; padding-top: 90px; position: relative; overflow: hidden; }
+  .hero::before, .hero::after {
+    content: ""; position: absolute; width: 560px; height: 560px; border-radius: 50%;
+    filter: blur(130px); opacity: .3; z-index: -1; animation: float 14s ease-in-out infinite;
+  }
+  .hero::before { background: var(--accent); top: -150px; left: -150px; }
+  .hero::after { background: var(--accent-2); bottom: -180px; right: -150px; animation-delay: -7s; }
+  @keyframes float { 50% { transform: translate(40px, 30px) scale(1.08); } }
+
+  .hero-grid { display: grid; grid-template-columns: 1.3fr 1fr; gap: 60px; align-items: center; }
+  .badge {
+    display: inline-flex; align-items: center; gap: 8px; padding: 7px 14px; border-radius: 999px;
+    border: 1px solid var(--border); background: var(--surface); color: var(--muted);
+    font-size: .85rem; margin-bottom: 26px; backdrop-filter: blur(8px);
+  }
+  .badge::before {
+    content: ""; width: 8px; height: 8px; border-radius: 50%; background: #22c55e;
+    box-shadow: 0 0 0 4px rgba(34,197,94,.2);
+  }
+  .hero h1 { font-size: clamp(2.8rem, 6.5vw, 5rem); font-weight: 800; line-height: 1.05; letter-spacing: -0.04em; }
+  .typed { display: inline-block; min-height: 1.2em; }
+  .typed::after { content: "|"; margin-left: 4px; color: var(--accent); animation: blink 1s steps(1) infinite; }
+  @keyframes blink { 50% { opacity: 0; } }
+  .hero p.lead { font-size: 1.12rem; color: var(--muted); max-width: 560px; margin: 24px 0 40px; }
+  .btn-row { display: flex; gap: 14px; flex-wrap: wrap; }
+  .btn {
+    position: relative; overflow: hidden; padding: 14px 28px; border-radius: 14px;
+    font-weight: 600; font-size: .95rem; border: 1px solid transparent; cursor: pointer;
+    transition: transform .25s var(--ease), box-shadow .25s;
+  }
+  .btn:hover { transform: translateY(-2px); }
+  .btn-primary {
+    background: linear-gradient(120deg, var(--accent), var(--accent-2)); color: #fff;
+    box-shadow: 0 14px 40px -12px var(--accent);
+  }
+  .btn-ghost { background: var(--surface); border-color: var(--border); backdrop-filter: blur(8px); }
+
+  .avatar-wrap { position: relative; justify-self: center; width: min(360px, 90%); }
+  .avatar {
+    aspect-ratio: 4/5; border-radius: 28px; overflow: hidden; position: relative;
+    background: linear-gradient(145deg, var(--surface-2), var(--surface-solid));
+    border: 1px solid var(--border); box-shadow: 0 40px 80px -30px rgba(0,0,0,.5);
+    transform-style: preserve-3d; transition: transform .15s ease-out;
+  }
+  .avatar img { width: 100%; height: 100%; object-fit: cover; }
+  .avatar .initial {
+    position: absolute; inset: 0; display: grid; place-items: center;
+    font-size: 6rem; font-weight: 800; color: var(--muted);
+  }
+  .avatar-wrap::before {
+    content: ""; position: absolute; inset: -14px; border-radius: 36px; z-index: -1;
+    background: linear-gradient(135deg, var(--accent), var(--accent-2)); opacity: .25; filter: blur(30px);
+  }
+  .float-chip {
+    position: absolute; bottom: 24px; left: -30px; padding: 12px 16px; border-radius: 14px;
+    background: var(--surface-solid); border: 1px solid var(--border);
+    box-shadow: 0 20px 40px -20px rgba(0,0,0,.4); font-size: .85rem; font-weight: 600;
+    display: flex; align-items: center; gap: 10px; animation: bob 5s ease-in-out infinite;
+  }
+  @keyframes bob { 50% { transform: translateY(-8px); } }
+
+  /* CARDS */
+  .card {
+    background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 28px; backdrop-filter: blur(10px); position: relative; overflow: hidden;
+    transition: transform .35s var(--ease), border-color .3s, box-shadow .3s;
+  }
+  .card::before {
+    content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none;
+    background: radial-gradient(400px circle at var(--mx,50%) var(--my,0%), color-mix(in srgb, var(--accent) 14%, transparent), transparent 40%);
+    opacity: 0; transition: opacity .3s;
+  }
+  .card:hover::before { opacity: 1; }
+  .card:hover { border-color: color-mix(in srgb, var(--accent) 50%, transparent); box-shadow: 0 30px 60px -30px rgba(0,0,0,.4); }
+
+  /* ABOUT */
+  .about-grid { display: grid; grid-template-columns: 1.2fr 1fr; gap: 60px; align-items: center; }
+  .about-text p { color: var(--muted); margin-bottom: 18px; font-size: 1.05rem; }
+  .stats { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+  .stat-num { font-size: 2.6rem; font-weight: 800; letter-spacing: -0.03em; }
+  .stat-label { color: var(--muted); font-size: .9rem; margin-top: 4px; }
+
+  /* SKILLS */
+  .skills-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px; }
+  .skill-head { display: flex; justify-content: space-between; margin-bottom: 14px; font-weight: 600; }
+  .skill-head span:last-child { color: var(--accent); }
+  .bar { height: 8px; background: var(--surface-2); border-radius: 99px; overflow: hidden; }
+  .bar span {
+    display: block; height: 100%; width: 0; border-radius: 99px;
+    background: linear-gradient(90deg, var(--accent), var(--accent-2));
+    transition: width 1.4s var(--ease);
+  }
+
+  /* PROJECTS */
+  .filters { display: flex; gap: 10px; margin-bottom: 36px; flex-wrap: wrap; }
+  .filter-btn {
+    padding: 9px 18px; border-radius: 999px; border: 1px solid var(--border);
+    background: transparent; color: var(--muted); font: inherit; font-size: .88rem; cursor: pointer;
+    transition: all .25s;
+  }
+  .filter-btn.active, .filter-btn:hover { color: #fff; background: var(--accent); border-color: var(--accent); }
+  .projects-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; }
+  .project.hide { display: none; }
+  .project-img {
+    height: 190px; border-radius: 14px; margin-bottom: 22px;
+    background: linear-gradient(135deg, var(--accent), var(--accent-2));
+    position: relative; overflow: hidden;
+  }
+  .project-img::after {
+    content: ""; position: absolute; inset: 0;
+    background: repeating-linear-gradient(45deg, rgba(255,255,255,.07) 0 2px, transparent 2px 14px);
+  }
+  .project h3 { font-size: 1.2rem; margin-bottom: 8px; }
+  .project p { color: var(--muted); font-size: .95rem; margin-bottom: 18px; }
+  .tags { display: flex; gap: 8px; flex-wrap: wrap; }
+  .tag {
+    font-size: .78rem; padding: 5px 11px; border-radius: 8px;
+    background: var(--surface-2); color: var(--muted);
+  }
+
+  /* TIMELINE */
+  .timeline { position: relative; padding-left: 32px; max-width: 760px; }
+  .timeline::before {
+    content: ""; position: absolute; left: 6px; top: 6px; bottom: 6px; width: 2px;
+    background: linear-gradient(var(--accent), var(--accent-2));
+  }
+  .tl-item { position: relative; margin-bottom: 40px; }
+  .tl-item::before {
+    content: ""; position: absolute; left: -32px; top: 6px; width: 14px; height: 14px;
+    border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 5px var(--bg), 0 0 20px var(--accent);
+  }
+  .tl-year { color: var(--accent); font-weight: 600; font-size: .88rem; }
+  .tl-item h4 { font-size: 1.1rem; margin: 4px 0 6px; }
+  .tl-item p { color: var(--muted); }
+
+  /* CONTACT */
+  .contact-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; }
+  .contact-card { display: flex; flex-direction: column; gap: 6px; }
+  .contact-card small { color: var(--muted); font-size: .85rem; }
+  .contact-card strong { font-size: 1.05rem; word-break: break-all; }
+  footer { border-top: 1px solid var(--border); padding: 32px 0; text-align: center; color: var(--muted); font-size: .9rem; }
+
+  /* REVEAL */
+  .reveal { opacity: 0; transform: translateY(40px); transition: opacity .9s var(--ease), transform .9s var(--ease); }
+  .reveal.visible { opacity: 1; transform: none; }
+  .reveal.d1 { transition-delay: .1s; }
+  .reveal.d2 { transition-delay: .2s; }
+  .reveal.d3 { transition-delay: .3s; }
+
+  @media (max-width: 900px) {
+    .hero-grid, .about-grid { grid-template-columns: 1fr; }
+    .avatar-wrap { order: -1; width: 240px; }
+    .float-chip { left: -10px; }
+    section { padding: 90px 0; }
+  }
+  @media (max-width: 800px) {
+    .nav-links {
+      position: absolute; top: 68px; left: 0; right: 0; flex-direction: column; gap: 0;
+      background: var(--bg); border-bottom: 1px solid var(--border); display: none;
+    }
+    .nav-links.open { display: flex; }
+    .nav-links a { display: block; padding: 16px 24px; }
+    .nav-links a::after { display: none; }
+    .menu-toggle { display: inline-block; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation: none !important; transition: none !important; }
+    .reveal { opacity: 1; transform: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="glow-cursor" id="glow"></div>
+<div class="grain"></div>
+<div class="progress" id="progress"></div>
+
+<nav>
+  <div class="container nav-inner">
+    <a href="#home" class="logo">Baxti<span class="grad">.</span></a>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="#about" data-i18n="nav_about"></a></li>
+      <li><a href="#skills" data-i18n="nav_skills"></a></li>
+      <li><a href="#projects" data-i18n="nav_projects"></a></li>
+      <li><a href="#experience" data-i18n="nav_experience"></a></li>
+      <li><a href="#contact" data-i18n="nav_contact"></a></li>
+    </ul>
+    <div class="nav-controls">
+      <select id="langSelect" aria-label="Language">
+        <option value="uz">O'zbekcha</option>
+        <option value="en">English</option>
+        <option value="ru">Русский</option>
+        <option value="kk">Қазақша</option>
+        <option value="zh">中文</option>
+      </select>
+      <button class="icon-btn" id="themeBtn" aria-label="Theme">🌙</button>
+      <button class="icon-btn menu-toggle" id="menuBtn" aria-label="Menu">☰</button>
+    </div>
+  </div>
+</nav>
+
+<header class="hero" id="home">
+  <div class="container hero-grid">
+    <div>
+      <span class="badge" data-i18n="badge"></span>
+      <h1><span data-i18n="hero_hi"></span> <span class="grad">Baxti</span></h1>
+      <p class="typed" id="typed" style="font-size:1.6rem;font-weight:600;margin-top:12px;"></p>
+      <p class="lead" data-i18n="lead"></p>
+      <div class="btn-row">
+        <a href="#projects" class="btn btn-primary" data-i18n="btn1"></a>
+        <a href="#contact" class="btn btn-ghost" data-i18n="btn2"></a>
+      </div>
+    </div>
+
+    <div class="avatar-wrap" id="avatarWrap">
+      <div class="avatar" id="avatar">
+        <!-- Rasmingizni photo.jpg nomi bilan index.html yoniga qo'ying -->
+        <img src="photo.jpg" alt="Baxti" onerror="this.remove()">
+        <div class="initial">B</div>
+      </div>
+      <div class="float-chip">🚀 <span data-i18n="chip"></span></div>
+    </div>
+  </div>
+</header>
+
+<section id="about">
+  <div class="container about-grid">
+    <div class="about-text reveal">
+      <span class="eyebrow" data-i18n="about_eyebrow"></span>
+      <h2 class="section-title" data-i18n="about_title"></h2>
+      <p data-i18n="about_p1"></p>
+      <p data-i18n="about_p2"></p>
+    </div>
+    <div class="stats">
+      <div class="card reveal d1"><div class="stat-num grad" data-count="3">0</div><div class="stat-label" data-i18n="stat1"></div></div>
+      <div class="card reveal d2"><div class="stat-num grad" data-count="20">0</div><div class="stat-label" data-i18n="stat2"></div></div>
+      <div class="card reveal d2"><div class="stat-num grad" data-count="15">0</div><div class="stat-label" data-i18n="stat3"></div></div>
+      <div class="card reveal d3"><div class="stat-num grad" data-count="5">0</div><div class="stat-label" data-i18n="stat4"></div></div>
+    </div>
+  </div>
+</section>
+
+<section id="skills">
+  <div class="container">
+    <span class="eyebrow reveal" data-i18n="skills_eyebrow"></span>
+    <h2 class="section-title reveal" data-i18n="skills_title"></h2>
+    <p class="section-sub reveal" data-i18n="skills_sub"></p>
+    <div class="skills-grid">
+      <div class="card reveal"><div class="skill-head"><span>HTML / CSS</span><span>95%</span></div><div class="bar"><span data-w="95"></span></div></div>
+      <div class="card reveal"><div class="skill-head"><span>JavaScript</span><span>85%</span></div><div class="bar"><span data-w="85"></span></div></div>
+      <div class="card reveal"><div class="skill-head"><span>React</span><span>80%</span></div><div class="bar"><span data-w="80"></span></div></div>
+      <div class="card reveal"><div class="skill-head"><span>Python</span><span>75%</span></div><div class="bar"><span data-w="75"></span></div></div>
+      <div class="card reveal"><div class="skill-head"><span>UI/UX Design</span><span>80%</span></div><div class="bar"><span data-w="80"></span></div></div>
+      <div class="card reveal"><div class="skill-head"><span>Git / GitHub</span><span>85%</span></div><div class="bar"><span data-w="85"></span></div></div>
+    </div>
+  </div>
+</section>
+
+<section id="projects">
+  <div class="container">
+    <span class="eyebrow reveal" data-i18n="projects_eyebrow"></span>
+    <h2 class="section-title reveal" data-i18n="projects_title"></h2>
+    <p class="section-sub reveal" data-i18n="projects_sub"></p>
+    <div class="filters reveal">
+      <button class="filter-btn active" data-filter="all" data-i18n="f_all"></button>
+      <button class="filter-btn" data-filter="web" data-i18n="f_web"></button>
+      <button class="filter-btn" data-filter="bot" data-i18n="f_bot"></button>
+    </div>
+    <div class="projects-grid">
+      <article class="card project reveal" data-cat="web">
+        <div class="project-img"></div>
+        <h3 data-i18n="p1_title"></h3>
+        <p data-i18n="p1_desc"></p>
+        <div class="tags"><span class="tag">React</span><span class="tag">Node.js</span><span class="tag">PostgreSQL</span></div>
+      </article>
+      <article class="card project reveal d1" data-cat="bot">
+        <div class="project-img" style="background:linear-gradient(135deg,#22c55e,#06b6d4)"></div>
+        <h3 data-i18n="p2_title"></h3>
+        <p data-i18n="p2_desc"></p>
+        <div class="tags"><span class="tag">Telegram Bot</span><span class="tag">Python</span><span class="tag">Mini App</span></div>
+      </article>
+      <article class="card project reveal d2" data-cat="web">
+        <div class="project-img" style="background:linear-gradient(135deg,#f97316,#ec4899)"></div>
+        <h3 data-i18n="p3_title"></h3>
+        <p data-i18n="p3_desc"></p>
+        <div class="tags"><span class="tag">HTML</span><span class="tag">CSS</span><span class="tag">JavaScript</span></div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section id="experience">
+  <div class="container">
+    <span class="eyebrow reveal" data-i18n="exp_eyebrow"></span>
+    <h2 class="section-title reveal" data-i18n="exp_title"></h2>
+    <p class="section-sub reveal" data-i18n="exp_sub"></p>
+    <div class="timeline">
+      <div class="tl-item reveal"><div class="tl-year">2025 — …</div><h4 data-i18n="exp1_role"></h4><p data-i18n="exp1_desc"></p></div>
+      <div class="tl-item reveal d1"><div class="tl-year">2023 — 2025</div><h4 data-i18n="exp2_role"></h4><p data-i18n="exp2_desc"></p></div>
+      <div class="tl-item reveal d2"><div class="tl-year">2022 — 2023</div><h4 data-i18n="exp3_role"></h4><p data-i18n="exp3_desc"></p></div>
+    </div>
+  </div>
+</section>
+
+<section id="contact">
+  <div class="container">
+    <span class="eyebrow reveal" data-i18n="contact_eyebrow"></span>
+    <h2 class="section-title reveal" data-i18n="contact_title"></h2>
+    <p class="section-sub reveal" data-i18n="contact_sub"></p>
+    <div class="contact-grid">
+      <a class="card contact-card reveal" href="mailto:you@example.com"><small>Email</small><strong>you@example.com</strong></a>
+      <a class="card contact-card reveal d1" href="https://t.me/username" target="_blank" rel="noopener"><small>Telegram</small><strong>@username</strong></a>
+      <a class="card contact-card reveal d2" href="https://github.com/username" target="_blank" rel="noopener"><small>GitHub</small><strong>github.com/username</strong></a>
+      <a class="card contact-card reveal d3" href="https://linkedin.com/in/username" target="_blank" rel="noopener"><small>LinkedIn</small><strong>linkedin.com/in/username</strong></a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="container">© 2026 Baxti. <span data-i18n="footer"></span></div>
+</footer>
+
+<script>
+/* ---------- TRANSLATIONS ---------- */
+const T = {
+  uz: {
+    nav_about:"Men haqimda", nav_skills:"Ko'nikmalar", nav_projects:"Loyihalar", nav_experience:"Tajriba", nav_contact:"Aloqa",
+    badge:"Hozir ochiq: yangi loyihalarga", hero_hi:"Salom, men",
+    roles:["Frontend dasturchi","Full-stack muhandis","UI/UX dizayner","Telegram Mini App ishlab chiquvchi"],
+    lead:"Zamonaviy, tez va chiroyli veb-ilovalar yarataman. G'oyangizni haqiqiy mahsulotga aylantiraman.",
+    btn1:"Loyihalarni ko'rish", btn2:"Bog'lanish", chip:"Tez va sifatli ish",
+    about_eyebrow:"Haqimda", about_title:"Men haqimda",
+    about_p1:"Veb-dasturlash va UI dizayn sohasida ishlayman. Foydalanuvchi uchun qulay va estetik yechimlar yaratishni yaxshi ko'raman.",
+    about_p2:"Har bir loyihada sifat, tezlik va detallarga alohida e'tibor beraman.",
+    stat1:"Yillik tajriba", stat2:"Tugallangan loyiha", stat3:"Mamnun mijoz", stat4:"Qo'llab-quvvatlanadigan til",
+    skills_eyebrow:"Texnologiyalar", skills_title:"Ko'nikmalar", skills_sub:"Asosiy texnologiyalar va yo'nalishlar.",
+    projects_eyebrow:"Portfolio", projects_title:"Loyihalar", projects_sub:"Tanlangan ishlarim.",
+    f_all:"Barchasi", f_web:"Veb", f_bot:"Bot / Mini App",
+    p1_title:"Onlayn do'kon platformasi", p1_desc:"To'lov tizimi, admin panel va mobil moslashuvchan dizayn bilan to'liq e-commerce yechim.",
+    p2_title:"Ta'lim Telegram Mini App", p2_desc:"Kurslarga yozilish, chat va rollar tizimi bilan o'quv platformasi.",
+    p3_title:"Portfolio landing page", p3_desc:"Animatsiyalar va ko'p tilli qo'llab-quvvatlash bilan zamonaviy landing sahifa.",
+    exp_eyebrow:"Karyera", exp_title:"Tajriba", exp_sub:"Karyera yo'lim.",
+    exp1_role:"Senior Frontend dasturchi — Kompaniya nomi", exp1_desc:"Mahsulot interfeyslarini ishlab chiqish va jamoani boshqarish.",
+    exp2_role:"Full-stack dasturchi — Kompaniya nomi", exp2_desc:"Veb-ilovalar va API'lar yaratish, ma'lumotlar bazasini loyihalash.",
+    exp3_role:"Junior dasturchi — Kompaniya nomi", exp3_desc:"Frontend komponentlar va sayt tuzatishlari ustida ishlash.",
+    contact_eyebrow:"Aloqa", contact_title:"Bog'lanish", contact_sub:"Loyiha yoki hamkorlik bo'yicha yozing — javob beraman.",
+    footer:"Barcha huquqlar himoyalangan."
+  },
+  en: {
+    nav_about:"About", nav_skills:"Skills", nav_projects:"Projects", nav_experience:"Experience", nav_contact:"Contact",
+    badge:"Open to new projects", hero_hi:"Hi, I'm",
+    roles:["Frontend Developer","Full-stack Engineer","UI/UX Designer","Telegram Mini App Builder"],
+    lead:"I build modern, fast and beautiful web applications. I turn your ideas into real products.",
+    btn1:"View Projects", btn2:"Get in Touch", chip:"Fast & high quality",
+    about_eyebrow:"About", about_title:"About Me",
+    about_p1:"I work in web development and UI design. I love creating intuitive and elegant solutions for users.",
+    about_p2:"I pay close attention to quality, performance and detail in every project.",
+    stat1:"Years of experience", stat2:"Projects completed", stat3:"Happy clients", stat4:"Supported languages",
+    skills_eyebrow:"Tech Stack", skills_title:"Skills", skills_sub:"Core technologies and focus areas.",
+    projects_eyebrow:"Portfolio", projects_title:"Projects", projects_sub:"Selected work.",
+    f_all:"All", f_web:"Web", f_bot:"Bot / Mini App",
+    p1_title:"Online Store Platform", p1_desc:"Full e-commerce solution with payments, admin panel and responsive design.",
+    p2_title:"Education Telegram Mini App", p2_desc:"Learning platform with course enrollment, chat and role management.",
+    p3_title:"Portfolio Landing Page", p3_desc:"Modern landing page with animations and multilingual support.",
+    exp_eyebrow:"Career", exp_title:"Experience", exp_sub:"My career path.",
+    exp1_role:"Senior Frontend Developer — Company", exp1_desc:"Building product interfaces and leading the frontend team.",
+    exp2_role:"Full-stack Developer — Company", exp2_desc:"Developing web apps and APIs, designing databases.",
+    exp3_role:"Junior Developer — Company", exp3_desc:"Working on frontend components and site improvements.",
+    contact_eyebrow:"Contact", contact_title:"Contact", contact_sub:"Reach out for projects or collaboration — I'll get back to you.",
+    footer:"All rights reserved."
+  },
+  ru: {
+    nav_about:"Обо мне", nav_skills:"Навыки", nav_projects:"Проекты", nav_experience:"Опыт", nav_contact:"Контакты",
+    badge:"Открыт для новых проектов", hero_hi:"Привет, я",
+    roles:["Frontend разработчик","Full-stack инженер","UI/UX дизайнер","Разработчик Telegram Mini App"],
+    lead:"Создаю современные, быстрые и красивые веб-приложения. Превращаю ваши идеи в реальные продукты.",
+    btn1:"Смотреть проекты", btn2:"Связаться", chip:"Быстро и качественно",
+    about_eyebrow:"Обо мне", about_title:"Обо мне",
+    about_p1:"Работаю в веб-разработке и UI-дизайне. Люблю создавать удобные и эстетичные решения для пользователей.",
+    about_p2:"Уделяю большое внимание качеству, скорости и деталям в каждом проекте.",
+    stat1:"Лет опыта", stat2:"Завершённых проектов", stat3:"Довольных клиентов", stat4:"Поддерживаемых языков",
+    skills_eyebrow:"Технологии", skills_title:"Навыки", skills_sub:"Основные технологии и направления.",
+    projects_eyebrow:"Портфолио", projects_title:"Проекты", projects_sub:"Избранные работы.",
+    f_all:"Все", f_web:"Веб", f_bot:"Бот / Mini App",
+    p1_title:"Платформа интернет-магазина", p1_desc:"Полноценное e-commerce решение с оплатой, админ-панелью и адаптивным дизайном.",
+    p2_title:"Образовательное Telegram Mini App", p2_desc:"Обучающая платформа с записью на курсы, чатом и системой ролей.",
+    p3_title:"Лендинг-портфолио", p3_desc:"Современная страница с анимациями и поддержкой нескольких языков.",
+    exp_eyebrow:"Карьера", exp_title:"Опыт", exp_sub:"Мой карьерный путь.",
+    exp1_role:"Senior Frontend разработчик — Компания", exp1_desc:"Разработка интерфейсов продуктов и руководство командой фронтенда.",
+    exp2_role:"Full-stack разработчик — Компания", exp2_desc:"Создание веб-приложений и API, проектирование баз данных.",
+    exp3_role:"Junior разработчик — Компания", exp3_desc:"Работа над фронтенд-компонентами и улучшениями сайтов.",
+    contact_eyebrow:"Контакты", contact_title:"Контакты", contact_sub:"Пишите по проектам и сотрудничеству — отвечу.",
+    footer:"Все права защищены."
+  },
+  kk: {
+    nav_about:"Менің туралы", nav_skills:"Дағдылар", nav_projects:"Жобалар", nav_experience:"Тәжірибе", nav_contact:"Байланыс",
+    badge:"Жаңа жобаларға ашықмын", hero_hi:"Сәлем, мен",
+    roles:["Frontend әзірлеуші","Full-stack инженер","UI/UX дизайнер","Telegram Mini App әзірлеушісі"],
+    lead:"Заманауи, жылдам және әдемі веб-қосымшалар жасаймын. Идеяларыңызды нақты өнімге айналдырамын.",
+    btn1:"Жобаларды көру", btn2:"Байланысу", chip:"Жылдам әрі сапалы",
+    about_eyebrow:"Менің туралы", about_title:"Менің туралы",
+    about_p1:"Веб-әзірлеу және UI дизайнмен айналысамын. Пайдаланушы үшін ыңғайлы әрі эстетикалық шешімдер жасағанды ұнатамын.",
+    about_p2:"Әр жобада сапаға, жылдамдыққа және бөлшектерге ерекше назар аударамын.",
+    stat1:"Жыл тәжірибе", stat2:"Аяқталған жоба", stat3:"Риза клиент", stat4:"Қолдау көрсетілетін тіл",
+    skills_eyebrow:"Технологиялар", skills_title:"Дағдылар", skills_sub:"Негізгі технологиялар мен бағыттар.",
+    projects_eyebrow:"Портфолио", projects_title:"Жобалар", projects_sub:"Таңдаулы жұмыстарым.",
+    f_all:"Барлығы", f_web:"Веб", f_bot:"Бот / Mini App",
+    p1_title:"Онлайн дүкен платформасы", p1_desc:"Төлем жүйесі, админ панель және бейімделгіш дизайны бар толық e-commerce шешім.",
+    p2_title:"Білім беру Telegram Mini App", p2_desc:"Курстарға жазылу, чат және рөлдер жүйесі бар оқу платформасы.",
+    p3_title:"Портфолио лендинг беті", p3_desc:"Анимациялар мен көп тілді қолдауы бар заманауи бет.",
+    exp_eyebrow:"Мансап", exp_title:"Тәжірибе", exp_sub:"Менің мансап жолым.",
+    exp1_role:"Senior Frontend әзірлеуші — Компания", exp1_desc:"Өнім интерфейстерін әзірлеу және фронтенд командасын басқару.",
+    exp2_role:"Full-stack әзірлеуші — Компания", exp2_desc:"Веб-қосымшалар мен API жасау, деректер базасын жобалау.",
+    exp3_role:"Junior әзірлеуші — Компания", exp3_desc:"Фронтенд компоненттер мен сайт жақсартулары бойынша жұмыс.",
+    contact_eyebrow:"Байланыс", contact_title:"Байланыс", contact_sub:"Жоба немесе ынтымақтастық бойынша жазыңыз — жауап беремін.",
+    footer:"Барлық құқықтар қорғалған."
+  },
+  zh: {
+    nav_about:"关于我", nav_skills:"技能", nav_projects:"项目", nav_experience:"经历", nav_contact:"联系",
+    badge:"目前开放新项目合作", hero_hi:"你好，我是",
+    roles:["前端开发者","全栈工程师","UI/UX 设计师","Telegram Mini App 开发者"],
+    lead:"我打造现代、快速且精美的网络应用，将你的想法变为真正的产品。",
+    btn1:"查看项目", btn2:"联系我", chip:"快速且高质量",
+    about_eyebrow:"关于", about_title:"关于我",
+    about_p1:"我专注于网页开发与 UI 设计，喜欢为用户创造直观而优雅的解决方案。",
+    about_p2:"在每个项目中，我都注重质量、性能和细节。",
+    stat1:"年经验", stat2:"已完成项目", stat3:"满意客户", stat4:"支持的语言",
+    skills_eyebrow:"技术栈", skills_title:"技能", skills_sub:"核心技术与专注领域。",
+    projects_eyebrow:"作品集", projects_title:"项目", projects_sub:"精选作品。",
+    f_all:"全部", f_web:"网页", f_bot:"机器人 / Mini App",
+    p1_title:"在线商城平台", p1_desc:"包含支付、管理后台和响应式设计的完整电商解决方案。",
+    p2_title:"教育类 Telegram Mini App", p2_desc:"包含课程报名、聊天和角色管理的学习平台。",
+    p3_title:"作品集落地页", p3_desc:"带动画和多语言支持的现代落地页。",
+    exp_eyebrow:"职业", exp_title:"经历", exp_sub:"我的职业之路。",
+    exp1_role:"高级前端开发 — 公司名称", exp1_desc:"负责产品界面开发并带领前端团队。",
+    exp2_role:"全栈开发 — 公司名称", exp2_desc:"开发网络应用与 API，设计数据库。",
+    exp3_role:"初级开发 — 公司名称", exp3_desc:"负责前端组件开发与网站优化。",
+    contact_eyebrow:"联系", contact_title:"联系", contact_sub:"欢迎咨询项目或合作，我会尽快回复。",
+    footer:"版权所有。"
+  }
+};
+
+/* ---------- LANGUAGE ---------- */
+let currentLang = localStorage.getItem('lang') || 'uz';
+const langSelect = document.getElementById('langSelect');
+
+function setLang(lang) {
+  currentLang = lang;
+  document.documentElement.lang = lang;
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const val = T[lang][el.dataset.i18n];
+    if (val) el.textContent = val;
+  });
+  langSelect.value = lang;
+  localStorage.setItem('lang', lang);
+  restartTyping();
+}
+
+langSelect.addEventListener('change', e => setLang(e.target.value));
+
+/* ---------- TYPING EFFECT ---------- */
+const typedEl = document.getElementById('typed');
+let typeTimer = null;
+function restartTyping() {
+  clearTimeout(typeTimer);
+  const roles = T[currentLang].roles;
+  let r = 0, c = 0, deleting = false;
+  const tick = () => {
+    const word = roles[r];
+    typedEl.textContent = word.slice(0, c);
+    if (!deleting && c < word.length) { c++; typeTimer = setTimeout(tick, 70); }
+    else if (!deleting) { deleting = true; typeTimer = setTimeout(tick, 1600); }
+    else if (c > 0) { c--; typeTimer = setTimeout(tick, 35); }
+    else { deleting = false; r = (r + 1) % roles.length; typeTimer = setTimeout(tick, 300); }
+  };
+  tick();
+}
+
+/* ---------- THEME ---------- */
+const themeBtn = document.getElementById('themeBtn');
+function applyTheme(t) {
+  document.documentElement.setAttribute('data-theme', t);
+  themeBtn.textContent = t === 'light' ? '☀️' : '🌙';
+  localStorage.setItem('theme', t);
+}
+themeBtn.addEventListener('click', () => {
+  applyTheme(document.documentElement.getAttribute('data-theme') === 'light' ? 'dark' : 'light');
+});
+applyTheme(localStorage.getItem('theme') || 'dark');
+
+/* ---------- MOBILE MENU ---------- */
+const menuBtn = document.getElementById('menuBtn');
+const navLinks = document.getElementById('navLinks');
+menuBtn.addEventListener('click', () => navLinks.classList.toggle('open'));
+navLinks.querySelectorAll('a').forEach(a => a.addEventListener('click', () => navLinks.classList.remove('open')));
+
+/* ---------- SCROLL: progress, active link, reveal, skills, counters ---------- */
+const progress = document.getElementById('progress');
+const sections = document.querySelectorAll('section[id]');
+const navAnchors = document.querySelectorAll('.nav-links a');
+
+window.addEventListener('scroll', () => {
+  const h = document.documentElement.scrollHeight - innerHeight;
+  progress.style.width = (scrollY / h * 100) + '%';
+  let current = '';
+  sections.forEach(s => { if (scrollY >= s.offsetTop - 200) current = s.id; });
+  navAnchors.forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + current));
+}, { passive: true });
+
+function animateCount(el) {
+  const target = +el.dataset.count, dur = 1400, start = performance.now();
+  const step = now => {
+    const p = Math.min((now - start) / dur, 1);
+    el.textContent = Math.round(target * (1 - Math.pow(1 - p, 3)));
+    if (p < 1) requestAnimationFrame(step);
+  };
+  requestAnimationFrame(step);
+}
+
+const io = new IntersectionObserver(entries => {
+  entries.forEach(entry => {
+    if (!entry.isIntersecting) return;
+    const el = entry.target;
+    el.classList.add('visible');
+    el.querySelectorAll('[data-w]').forEach(b => b.style.width = b.dataset.w + '%');
+    el.querySelectorAll('[data-count]').forEach(animateCount);
+    io.unobserve(el);
+  });
+}, { threshold: 0.15 });
+
+document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+document.querySelectorAll('.skills-grid .card, .stats .card').forEach(el => {
+  if (!el.classList.contains('reveal')) el.classList.add('reveal');
+  io.observe(el);
+});
+document.querySelectorAll('.skills-grid .card').forEach(card => {
+  card.querySelectorAll('[data-w]').forEach(() => {});
+});
+document.querySelectorAll('.bar span').forEach(s => {
+  const pct = s.parentElement.parentElement.querySelector('.skill-head span:last-child').textContent;
+  s.dataset.w = parseInt(pct, 10);
+});
+
+/* ---------- PROJECT FILTER ---------- */
+document.querySelectorAll('.filter-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const f = btn.dataset.filter;
+    document.querySelectorAll('.project').forEach(p => {
+      p.classList.toggle('hide', f !== 'all' && p.dataset.cat !== f);
+    });
+  });
+});
+
+/* ---------- CARD SPOTLIGHT (mouse position in cards) ---------- */
+document.querySelectorAll('.card').forEach(card => {
+  card.addEventListener('mousemove', e => {
+    const r = card.getBoundingClientRect();
+    card.style.setProperty('--mx', (e.clientX - r.left) + 'px');
+    card.style.setProperty('--my', (e.clientY - r.top) + 'px');
+  });
+});
+
+/* ---------- AVATAR 3D TILT ---------- */
+const avatar = document.getElementById('avatar');
+const avatarWrap = document.getElementById('avatarWrap');
+if (matchMedia('(hover: hover)').matches) {
+  avatarWrap.addEventListener('mousemove', e => {
+    const r = avatar.getBoundingClientRect();
+    const x = (e.clientX - r.left) / r.width - .5;
+    const y = (e.clientY - r.top) / r.height - .5;
+    avatar.style.transform = `perspective(900px) rotateY(${x * 14}deg) rotateX(${-y * 14}deg)`;
+  });
+  avatarWrap.addEventListener('mouseleave', () => avatar.style.transform = '');
+}
+
+/* ---------- CURSOR GLOW ---------- */
+const glow = document.getElementById('glow');
+if (matchMedia('(hover: hover)').matches) {
+  let gx = 0, gy = 0, tx = 0, ty = 0;
+  window.addEventListener('mousemove', e => { tx = e.clientX; ty = e.clientY; });
+  const loop = () => {
+    gx += (tx - gx) * .12; gy += (ty - gy) * .12;
+    glow.style.left = gx + 'px'; glow.style.top = gy + 'px';
+    requestAnimationFrame(loop);
+  };
+  loop();
+}
+
+/* ---------- INIT ---------- */
+setLang(currentLang);
+</script>
+</body>
+</html>
